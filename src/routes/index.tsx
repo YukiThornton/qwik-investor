@@ -9,17 +9,17 @@ import Starter from "~/components/starter/next-steps/next-steps";
 export default component$(() => {
   return (
     <>
-      TODO index
+      No portfolio at this moment.
     </>
   );
 });
 
 export const head: DocumentHead = {
-  title: "Welcome to Qwik",
+  title: "Qwik Investor",
   meta: [
     {
       name: "description",
-      content: "Qwik site description",
+      content: "Qwik Investor top page",
     },
   ],
 };
