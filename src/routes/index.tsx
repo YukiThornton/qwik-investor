@@ -1,16 +1,29 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useSignal } from "@builder.io/qwik";
+import { routeLoader$ } from "@builder.io/qwik-city";
 import type { DocumentHead } from "@builder.io/qwik-city";
+import PortfolioViewer from '~/components/portfolio-viewer/portfolio-viewer';
 
-import Counter from "~/components/starter/counter/counter";
-import Hero from "~/components/starter/hero/hero";
-import Infobox from "~/components/starter/infobox/infobox";
-import Starter from "~/components/starter/next-steps/next-steps";
+export const useDadJoke = routeLoader$(async () => {
+  const response = await fetch('https://icanhazdadjoke.com/', {
+    headers: { Accept: 'application/json' },
+  });
+  return (await response.json()) as {
+    id: string;
+    status: number;
+    joke: string;
+  };
+})
 
 export default component$(() => {
+  const isPortolioViewerOpen = useSignal(false);
+  const dadJokeSignal = useDadJoke();
+
   return (
-    <>
-      No portfolio at this moment.
-    </>
+    <div>
+      <p>No portfolio at this moment.</p>
+      <button onClick$={() => (isPortolioViewerOpen.value = !isPortolioViewerOpen.value)}>Get my portfolio</button>
+      {isPortolioViewerOpen.value ? <PortfolioViewer></PortfolioViewer> : <p>{dadJokeSignal.value.joke}</p>}
+    </div>
   );
 });
 
