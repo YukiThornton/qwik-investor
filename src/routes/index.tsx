@@ -2,27 +2,41 @@ import { component$, useSignal } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import PortfolioViewer from '~/components/portfolio-viewer/portfolio-viewer';
+import type { PortfolioResponse } from '~/types/portfolio-response';
 
-export const useDadJoke = routeLoader$(async () => {
-  const response = await fetch('https://icanhazdadjoke.com/', {
-    headers: { Accept: 'application/json' },
+export const usePortfolio = routeLoader$(async () => {
+  const response = await fetch('http://localhost:7890/plans', {
+    method: 'POST',
+    headers: { "Content-Type": 'application/json' },
+    body: JSON.stringify({
+      budget: {
+          max: 720,
+          min: 670
+      },
+      portfolio: [
+          {ticker: "Ticker1", price: 409.19, holdings: 40, target_ratio: 0.6},
+          {ticker: "Ticker2", price: 72.86, holdings: 224, target_ratio: 0.4},
+      ]
+  }),
   });
-  return (await response.json()) as {
-    id: string;
-    status: number;
-    joke: string;
-  };
+  if (response.status == 200) {
+    return (await response.json()) as PortfolioResponse;
+  } else {
+    console.error('Failed to fetch portfolio');
+    console.log(response);
+    throw new Error();
+  }
 })
 
 export default component$(() => {
   const isPortolioViewerOpen = useSignal(false);
-  const dadJokeSignal = useDadJoke();
+  const portfolioSignal = usePortfolio();
 
   return (
     <div>
       <p>No portfolio at this moment.</p>
       <button onClick$={() => (isPortolioViewerOpen.value = !isPortolioViewerOpen.value)}>Get my portfolio</button>
-      {isPortolioViewerOpen.value ? <PortfolioViewer></PortfolioViewer> : <p>{dadJokeSignal.value.joke}</p>}
+      {isPortolioViewerOpen.value ? <PortfolioViewer {...portfolioSignal.value.bottom_up[1]}></PortfolioViewer> : <p>{portfolioSignal.value.bottom_up[0].ticker}</p>}
     </div>
   );
 });
