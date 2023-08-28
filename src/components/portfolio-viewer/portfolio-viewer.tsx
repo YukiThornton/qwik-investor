@@ -1,19 +1,43 @@
-import { component$ } from '@builder.io/qwik';
-import { PortfolioItem } from '~/types/portfolio-response';
+import { component$, useContext } from '@builder.io/qwik';
+import { CTX } from '~/routes';
 
-export default component$<PortfolioItem>((props) => {
+export default component$(() => {
+    const data = useContext(CTX);
+
     return (
-        <section>
-            <p>ta-da!</p>
-            <ul>
-                <li>amount: {props.amount}</li>
-                <li>cost: {props.cost}</li>
-                <li>holdings: {props.holdings}</li>
-                <li>price: {props.price}</li>
-                <li>ratio: {props.ratio}</li>
-                <li>target_ratio: {props.target_ratio}</li>
-                <li>ticker: {props.ticker}</li>
-            </ul>
-        </section>
+        <div>
+            <section>
+                <h2>Bottom Up Plan</h2>
+                {data.bottom_up.map((item) => (
+                    <div key={item.ticker}>
+                        <h3>{item.ticker}</h3>
+                        <ul>
+                            <li>amount: {item.amount}</li>
+                            <li>cost: {item.cost}</li>
+                            <li>holdings: {item.holdings}</li>
+                            <li>price: {item.price}</li>
+                            <li>ratio: {item.ratio}</li>
+                            <li>target_ratio: {item.target_ratio}</li>
+                        </ul>
+                    </div>
+                ))}
+            </section>
+            <section>
+                <h2>Smallest Diff Plan</h2>
+                {data.smallest_diff.map((item) => (
+                    <div key={item.ticker}>
+                        <h3>{item.ticker}</h3>
+                        <ul>
+                            <li>amount: {item.amount}</li>
+                            <li>cost: {item.cost}</li>
+                            <li>holdings: {item.holdings}</li>
+                            <li>price: {item.price}</li>
+                            <li>ratio: {item.ratio}</li>
+                            <li>target_ratio: {item.target_ratio}</li>
+                        </ul>
+                    </div>
+                ))}
+            </section>
+        </div>
     )
 })

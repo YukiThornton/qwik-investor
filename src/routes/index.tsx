@@ -1,8 +1,10 @@
-import { component$, useSignal } from "@builder.io/qwik";
+import { component$, createContextId, useContextProvider, useSignal, useStore } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import PortfolioViewer from '~/components/portfolio-viewer/portfolio-viewer';
 import type { PortfolioResponse } from '~/types/portfolio-response';
+
+export const CTX = createContextId<PortfolioResponse>('portfolio');
 
 export const usePortfolio = routeLoader$(async () => {
   const response = await fetch('http://localhost:7890/plans', {
@@ -31,12 +33,14 @@ export const usePortfolio = routeLoader$(async () => {
 export default component$(() => {
   const isPortolioViewerOpen = useSignal(false);
   const portfolioSignal = usePortfolio();
+  const portfolioData = useStore(portfolioSignal.value);
+  useContextProvider(CTX, portfolioData);
 
   return (
     <div>
       <p>No portfolio at this moment.</p>
       <button onClick$={() => (isPortolioViewerOpen.value = !isPortolioViewerOpen.value)}>Get my portfolio</button>
-      {isPortolioViewerOpen.value ? <PortfolioViewer {...portfolioSignal.value.bottom_up[1]}></PortfolioViewer> : <p>{portfolioSignal.value.bottom_up[0].ticker}</p>}
+      {isPortolioViewerOpen.value ? <PortfolioViewer></PortfolioViewer> : <p>{portfolioSignal.value.bottom_up[0].ticker}</p>}
     </div>
   );
 });
